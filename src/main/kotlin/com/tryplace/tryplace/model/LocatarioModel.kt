@@ -12,25 +12,22 @@ import java.util.UUID
 import java.time.Instant
 
 @Entity
-@Table(name = "locatario_db",
-    uniqueConstraints = [
-        UniqueConstraint(name = "uk_locatario_email", columnNames = ["emailLocatario"]),
-        UniqueConstraint(name = "uk_locatario_telefone", columnNames = ["telefoneLocatario"]),
-        UniqueConstraint(name = "uk_locatario_email", columnNames = ["dataDeNascimentoLocatario"]),
-    ]
-)
+@Table(name = "locatario_db")
+
 class LocatarioModel(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID,
-    @Column(nullable = false)
+    var id: UUID? = null,
+    @Column(nullable = false, unique = true)
     var nome: String,
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     var email: String,
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     var telefone: String,
     @Column(nullable = false)
     var dataDeNascimento: String,
+    @Column(nullable = false)
+    var senha: String,
     @CreationTimestamp
-    var criadoEm: Instant = Instant.now()
+    var criadoEm: Instant? = null
 )

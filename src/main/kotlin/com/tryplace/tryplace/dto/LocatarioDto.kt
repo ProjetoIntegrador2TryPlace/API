@@ -1,9 +1,11 @@
 package com.tryplace.tryplace.dto
 
-// aqui vai ser a resposta da chamada
+import java.util.UUID
+
+// aqui vai ser a resposta da chamada, o que retorna pro usuário
 
 data class LocatarioDto(
-    val id: String,
+    val id: UUID,
     val nome: String,
     val email: String,
     val telefone: String,
