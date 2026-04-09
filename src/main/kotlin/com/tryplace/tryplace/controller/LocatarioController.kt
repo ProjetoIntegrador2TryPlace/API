@@ -23,8 +23,7 @@ class LocatarioController(val locatarioService: LocatarioService) {
 
     @PostMapping("/registerLocatario")
     fun criarLocatario(@RequestBody locatario: LocatarioRequest) : LocatarioDto {
-        val dto = locatarioService.criarLocatario(locatario.nome, locatario.email, locatario.telefone, locatario.dataDeNascimento, locatario.senha)
-        return dto
+        return locatarioService.criarLocatario(locatario)
     }
 
 
