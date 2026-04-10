@@ -17,7 +17,7 @@ class LocadorController(
     private val locadorService: LocadorService
 ){
     @PostMapping("/registrarLocador")
-    fun criarLocador(locador: LocadorRequest): LocadorDto {
+    fun criarLocador(@RequestBody locador: LocadorRequest): LocadorDto {
         return locadorService.criarLocador(locador)
     }
 

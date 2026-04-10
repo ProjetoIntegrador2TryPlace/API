@@ -4,17 +4,21 @@ import com.tryplace.tryplace.dto.LocadorDto
 import com.tryplace.tryplace.dto.LocadorRequest
 import com.tryplace.tryplace.model.LocadorModel
 import com.tryplace.tryplace.repository.LocadorRepository
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.RequestBody
 
 @Service
 class LocadorService(
-    private val repository: LocadorRepository
+    private val repository: LocadorRepository,
+    private val passwordEncoder: BCryptPasswordEncoder
 ) {
 
     fun criarLocador(requestlocador: LocadorRequest) : LocadorDto {
 
-
+        val senhaBruta = requestlocador.senha
+        val senhaCriptografada = passwordEncoder.encode(senhaBruta)
 
         val entidade = LocadorModel (
             nome = requestlocador.nome.trim(),
@@ -22,7 +26,7 @@ class LocadorService(
             email = requestlocador.email.trim(),
             telefone = requestlocador.telefone.trim(),
             cnpj = requestlocador.cnpj.trim(),
-            senha = requestlocador.senha.trim()
+            senha = senhaCriptografada
 
         )
         val savedEntidade = repository.save(entidade)
@@ -39,7 +43,7 @@ class LocadorService(
 
     fun buscarLocador(nome: String): LocadorDto? {
 
-        val entity = repository.findByNome(nome)
+        val entity = repository.findByNome(nome) ?: return null
 
         return LocadorDto (
             id = entity.id!!,

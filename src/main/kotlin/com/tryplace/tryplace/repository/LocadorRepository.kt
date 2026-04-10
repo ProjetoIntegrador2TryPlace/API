@@ -10,5 +10,7 @@ import java.util.UUID
 
 @Repository
 interface LocadorRepository: JpaRepository<LocadorModel, UUID> {
-    fun findByNome(nome:String): LocadorDto
+    fun findByNome(nome:String): LocadorModel?
+
+    fun findByEmail(email: String): LocadorModel?
 }
