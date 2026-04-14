@@ -17,7 +17,7 @@ class LocatarioController(val locatarioService: LocatarioService) {
 
 
     @GetMapping("/{nome}")
-    fun listarLocatario(@PathVariable nome: String) : LocatarioDto? {
+    fun listarLocatario(@PathVariable nome: String) : LocatarioDto {
         return locatarioService.buscarLocatario(nome)
     }
 

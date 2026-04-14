@@ -2,6 +2,7 @@ package com.tryplace.tryplace.service
 
 import com.tryplace.tryplace.dto.LocatarioDto
 import com.tryplace.tryplace.dto.LocatarioRequest
+import com.tryplace.tryplace.exceptions.RecursoNaoEncontradoException
 import com.tryplace.tryplace.model.LocatarioModel
 import com.tryplace.tryplace.repository.LocatarioRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -37,8 +38,9 @@ class LocatarioService(
         )
     }
 
-    fun buscarLocatario(nome: String) : LocatarioDto? {
-        val entity = repository.findByNome(nome) ?: return null
+    fun buscarLocatario(nome: String) : LocatarioDto {
+        val entity = repository.findByNome(nome)
+            ?: throw RecursoNaoEncontradoException("Locatário com o $nome não encontrado")
 
         return LocatarioDto (
             id = entity.id!!,
