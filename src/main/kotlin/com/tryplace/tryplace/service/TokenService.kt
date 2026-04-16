@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
 import com.tryplace.tryplace.model.LocadorModel
+import com.tryplace.tryplace.model.LocatarioModel
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -12,10 +13,26 @@ import java.time.ZoneOffset
 
 @Service
 class TokenService {
+
     @Value("\${api.security.token.secret}")
     private lateinit var secret: String
 
+    // 1. Gera token para o Locador
     fun gerarToken(usuario: LocadorModel): String {
+        return try {
+            val algoritmo = Algorithm.HMAC256(secret)
+            JWT.create()
+                .withIssuer("API TryPlace")
+                .withSubject(usuario.email)
+                .withExpiresAt(dataExpiracao())
+                .sign(algoritmo)
+        } catch (exception: JWTCreationException) {
+            throw RuntimeException("Erro ao gerar token jwt", exception)
+        }
+    }
+
+    // 2. Gera token para o Locatário
+    fun gerarToken(usuario: LocatarioModel): String {
         return try {
             val algoritmo = Algorithm.HMAC256(secret)
             JWT.create()

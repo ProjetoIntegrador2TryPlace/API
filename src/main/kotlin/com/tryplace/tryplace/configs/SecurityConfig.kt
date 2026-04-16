@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SecurityConfig(
     private val securityFilter: SecurityFilter
 ) {
+
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
@@ -24,12 +25,14 @@ class SecurityConfig(
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers("/api/locador", "/api/locador/**").permitAll()
                 auth.requestMatchers("/api/loginLocador", "/api/loginLocador/**").permitAll()
+                auth.requestMatchers("/error").permitAll()
+                auth.requestMatchers("/api/locatario/**").permitAll()
+                auth.requestMatchers("/api/login","/api/login/**").permitAll()
                 auth.anyRequest().authenticated()
             }
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
-
     @Bean
     fun passwordEncoder() : BCryptPasswordEncoder {
         return BCryptPasswordEncoder()
