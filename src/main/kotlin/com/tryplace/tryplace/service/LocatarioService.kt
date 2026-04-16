@@ -29,7 +29,7 @@ class LocatarioService(
         )
         val savedEntity = repository.save(entity)
 
-        return LocatarioDto (
+        return LocatarioDto(
             id = savedEntity.id!!,
             nome = savedEntity.nome,
             email = savedEntity.email,
