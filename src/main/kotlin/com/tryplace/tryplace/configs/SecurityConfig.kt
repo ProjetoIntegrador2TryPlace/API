@@ -27,7 +27,9 @@ class SecurityConfig(
                 auth.requestMatchers("/api/loginLocador", "/api/loginLocador/**").permitAll()
                 auth.requestMatchers("/error").permitAll()
                 auth.requestMatchers("/api/locatario/**").permitAll()
-                auth.requestMatchers("/api/login","/api/login/**").permitAll()
+                auth.requestMatchers("/api/login", "/api/login/**").permitAll()
+                auth.requestMatchers("/login", "/login/**").permitAll() // ← linha adicionada
+                auth.requestMatchers("/api/imovel", "/api/imovel/**").permitAll()
                 auth.anyRequest().authenticated()
             }
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)

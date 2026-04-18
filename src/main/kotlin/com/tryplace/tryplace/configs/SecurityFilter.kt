@@ -21,27 +21,29 @@ class SecurityFilter(
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
         val tokenJWT = recuperarToken(request)
 
-        if (tokenJWT != null) {
-            val subject = tokenService.getSubject(tokenJWT) // Aqui geralmente é o email do usuário
+    if (tokenJWT != null) {
+        try {
+            val subject = tokenService.getSubject(tokenJWT) // Se o token for inválido, cai no catch
 
             // 1. Tenta achar o usuário como Locatário primeiro
             val locatario = locatarioRepository.findByEmail(subject)
-
             if (locatario != null) {
                 val authentication = UsernamePasswordAuthenticationToken(locatario, null, locatario.authorities)
                 SecurityContextHolder.getContext().authentication = authentication
             } else {
                 // 2. Se não achou como Locatário, tenta achar como Locador
                 val locador = locadorRepository.findByEmail(subject)
-
                 if (locador != null) {
                     val authentication = UsernamePasswordAuthenticationToken(locador, null, locador.authorities)
                     SecurityContextHolder.getContext().authentication = authentication
                 }
             }
+        } catch (e: Exception) {
+            // Token expirou ou é inválido. Ignoramos e ele segue como Convidado!
+            println("Token inválido ignorado: ${e.message}")
         }
-
-        filterChain.doFilter(request, response)
+    }
+    filterChain.doFilter(request, response)
     }
 
     private fun recuperarToken(request: HttpServletRequest): String? {
