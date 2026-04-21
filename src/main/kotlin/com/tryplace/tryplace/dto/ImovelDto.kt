@@ -14,6 +14,7 @@ data class ImovelDto(
     val quantidadeQuarto: Int,
     val tipoImovel: String,
     val telefoneLocador: String,
+    val tipoAnunciante: String,
     val wifi: Boolean,
     val cafeDaManha: Boolean,
     val ruaImovel: String,

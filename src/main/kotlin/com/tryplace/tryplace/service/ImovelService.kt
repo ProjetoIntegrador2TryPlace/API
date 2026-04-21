@@ -58,26 +58,33 @@ class ImovelService(
         tipoImovel = im.tipoImovel
     )
 
-    private fun converterParaCadastradoDto(im: ImovelModel) = ImovelDto(
-        id = im.id!!,
-        nomeImovel = im.nomeImovel,
-        imagemImovel = im.imagemImovel,
-        valorAluguel = im.valorAluguel,
-        avaliacaoImovel = im.avaliacaoImovel ,
-        descricaoImovel = im.descricaoImovel,
-        quantidadeBanheiro = im.quantidadeBanheiro,
-        quantidadeQuarto = im.quantidadeQuarto,
-        tipoImovel = im.tipoImovel,
-        telefoneLocador = im.dono.telefone,
-        wifi = im.wifi,
-        cafeDaManha = im.cafeDaManha,
-        ruaImovel = im.ruaImovel,
-        numeroImovel = im.numeroImovel,
-        bairroImovel = im.bairroImovel,
-        cidadeImovel = im.cidadeImovel,
-        estadoImovel = im.estadoImovel,
-        cepImovel = im.cepImovel
-    )
+    private fun converterParaCadastradoDto(im: ImovelModel): ImovelDto {
+        val docDonoLimpo = im.dono.cpfCnpj.filter { it.isDigit() }
+        val tipoDono = if (docDonoLimpo.length == 14) "EMPRESA" else "PESSOA FISICA"
+
+        return ImovelDto(
+            id = im.id!!,
+            nomeImovel = im.nomeImovel,
+            imagemImovel = im.imagemImovel,
+            valorAluguel = im.valorAluguel,
+            avaliacaoImovel = im.avaliacaoImovel ,
+            descricaoImovel = im.descricaoImovel,
+            quantidadeBanheiro = im.quantidadeBanheiro,
+            quantidadeQuarto = im.quantidadeQuarto,
+            tipoImovel = im.tipoImovel,
+            telefoneLocador = im.dono.telefone,
+            tipoAnunciante = tipoDono,
+            wifi = im.wifi,
+            cafeDaManha = im.cafeDaManha,
+            ruaImovel = im.ruaImovel,
+            numeroImovel = im.numeroImovel,
+            bairroImovel = im.bairroImovel,
+            cidadeImovel = im.cidadeImovel,
+            estadoImovel = im.estadoImovel,
+            cepImovel = im.cepImovel
+        )
+
+    }
 
     fun criarImovel (request: ImovelRequest, donoLogado: UsuarioModel): ImovelDto {
         val imovel = ImovelModel (

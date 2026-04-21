@@ -10,6 +10,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.Table
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.time.Instant
 import java.time.LocalDate
@@ -54,6 +55,8 @@ class UsuarioModel (
     @Column(nullable = false)
     var termoResponsabilidade: Boolean = false,
 
+    @Column(nullable = false)
+    var role: String = "ROLE_USUARIO",
 
     @ElementCollection
     @CollectionTable(name = "usuario_badges", joinColumns = [JoinColumn(name = "usuario_id")])
@@ -61,7 +64,9 @@ class UsuarioModel (
     var badges: MutableList<String> = mutableListOf(),
 
 ) : UserDetails {
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = mutableListOf()
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
+        return mutableListOf(SimpleGrantedAuthority(role))
+    }
 
     override fun getPassword(): String = senha
 

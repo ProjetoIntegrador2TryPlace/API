@@ -11,6 +11,7 @@ data class UsuarioDto(
     val telefone: String,
     val dataDeNascimento: LocalDate,
     val isMaiorDeIdade: Boolean,
+    val tipoConta: String,
 
     val nomeEmpresa: String?,
     val cursoPeriodo: String?,

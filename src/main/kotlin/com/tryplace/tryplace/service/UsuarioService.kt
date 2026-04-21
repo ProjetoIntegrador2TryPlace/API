@@ -46,6 +46,7 @@ class UsuarioService(
                 throw RuntimeException("Este CPF/CNPJ já está em uso por outra conta.")
             }
             usuario.cpfCnpj = documentoLimpo
+
         }
 
         request.nomeEmpresa?.let { usuario.nomeEmpresa = it }
@@ -77,6 +78,7 @@ class UsuarioService(
             }
         }
 
+
         val novoUsuario = UsuarioModel(
             nomeCompleto = request.nomeCompleto,
             email = request.email,
@@ -97,6 +99,9 @@ class UsuarioService(
     private fun converterParaDto(usuario: UsuarioModel): UsuarioDto {
         val idade = Period.between(usuario.dataDeNascimento, LocalDate.now()).years
 
+        val docLimpo = usuario.cpfCnpj.filter { it.isDigit() }
+        val tipo = if (docLimpo.length == 14) "EMPRESA" else "PESSOA FISICA"
+
         return UsuarioDto(
             id = usuario.id!!,
             nomeCompleto = usuario.nomeCompleto,
@@ -105,6 +110,7 @@ class UsuarioService(
             telefone = usuario.telefone,
             dataDeNascimento = usuario.dataDeNascimento,
             isMaiorDeIdade = idade >= 18,
+            tipoConta = tipo,
             nomeEmpresa = usuario.nomeEmpresa,
             cursoPeriodo = usuario.cursoPeriodo,
             interesseDividir = usuario.interesseDividir
