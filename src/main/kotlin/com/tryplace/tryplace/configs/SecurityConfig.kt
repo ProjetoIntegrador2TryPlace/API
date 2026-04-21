@@ -23,11 +23,11 @@ class SecurityConfig(
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
-                auth.requestMatchers("/api/locador", "/api/locador/**").permitAll()
-                auth.requestMatchers("/api/loginLocador", "/api/loginLocador/**").permitAll()
                 auth.requestMatchers("/error").permitAll()
-                auth.requestMatchers("/api/locatario/**").permitAll()
+                auth.requestMatchers("/api/usuario", "/api/usuario/**").permitAll()
                 auth.requestMatchers("/api/login","/api/login/**").permitAll()
+                auth.requestMatchers(org.springframework.http.HttpMethod.GET,"/api/imovel/visitante/**").permitAll()
+                auth.requestMatchers("v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 auth.anyRequest().authenticated()
             }
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)

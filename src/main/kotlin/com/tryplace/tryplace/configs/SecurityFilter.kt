@@ -1,7 +1,6 @@
 package com.tryplace.tryplace.configs
 
-import com.tryplace.tryplace.repository.LocadorRepository
-import com.tryplace.tryplace.repository.LocatarioRepository
+import com.tryplace.tryplace.repository.UsuarioRepository
 import com.tryplace.tryplace.service.TokenService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -14,30 +13,20 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class SecurityFilter(
     private val tokenService: TokenService,
-    private val locatarioRepository: LocatarioRepository,
-    private val locadorRepository: LocadorRepository
+    private val usuarioRepository: UsuarioRepository,
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
         val tokenJWT = recuperarToken(request)
 
         if (tokenJWT != null) {
-            val subject = tokenService.getSubject(tokenJWT) // Aqui geralmente é o email do usuário
+            val subject = tokenService.getSubject(tokenJWT)
 
-            // 1. Tenta achar o usuário como Locatário primeiro
-            val locatario = locatarioRepository.findByEmail(subject)
+            val usuario = usuarioRepository.findByEmail(subject)
 
-            if (locatario != null) {
-                val authentication = UsernamePasswordAuthenticationToken(locatario, null, locatario.authorities)
+            if (usuario != null) {
+                val authentication = UsernamePasswordAuthenticationToken(usuario, null, usuario.authorities)
                 SecurityContextHolder.getContext().authentication = authentication
-            } else {
-                // 2. Se não achou como Locatário, tenta achar como Locador
-                val locador = locadorRepository.findByEmail(subject)
-
-                if (locador != null) {
-                    val authentication = UsernamePasswordAuthenticationToken(locador, null, locador.authorities)
-                    SecurityContextHolder.getContext().authentication = authentication
-                }
             }
         }
 
