@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import jakarta.mail.internet.MimeMessage
+import org.springframework.mail.javamail.MimeMessageHelper
 import kotlin.random.Random
 
 @Service
@@ -31,13 +33,26 @@ class RecuperacaoSenhaService(
         )
         tokenRepository.save(token)
 
-        val emailMsg = SimpleMailMessage().apply {
-            from = "elpedrorenan08@gmail.com"
-            setTo(email)
-            subject = "Recuperação de Senha - TryPlace"
-            text = "Seu código de recuperação é: $codigo"
-        }
-        mailSender.send(emailMsg)
+        val mimeMessage: MimeMessage = mailSender.createMimeMessage()
+        val helper = MimeMessageHelper(mimeMessage, true, "UTF-8")
+
+        helper.setFrom("TryPlace <elpedrorenan08@gmail.com>")
+        helper.setTo(email)
+        helper.setSubject("$codigo é o seu código de recuperação")
+
+        val htmlBody = """
+            <div style="font-family: sans-serif; max-width: 400px; margin: 0 auto; border: 1px solid #e1e1e1; padding: 20px; border-radius: 10px;">
+                <h2 style="color: #333; text-align: center;">Recuperação de Senha</h2>
+                <p style="color: #555;">Você solicitou a redefinição de senha no <strong>TryPlace</strong>. Use o código abaixo para continuar:</p>
+                <div style="background-color: #f4f4f4; padding: 15px; text-align: center; border-radius: 8px; margin: 20px 0;">
+                    <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #2c3e50;">$codigo</span>
+                </div>
+                <p style="font-size: 12px; color: #888; text-align: center;">Este código expira em 15 minutos.</p>
+            </div>
+        """.trimIndent()
+
+        helper.setText(htmlBody, true)
+        mailSender.send(mimeMessage)
     }
 
     @Transactional
