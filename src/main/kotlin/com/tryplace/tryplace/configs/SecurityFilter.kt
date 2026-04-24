@@ -26,6 +26,7 @@ class SecurityFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
+
         val tokenJWT = recuperarToken(request)
 
         if (tokenJWT != null) {
@@ -44,7 +45,7 @@ class SecurityFilter(
                 }
 
             } catch (e: Exception) {
-                println("🔥 Token inválido ou expirado: ${e.message}")
+                println("Token inválido ou expirado: ${e.message}")
             }
         }
 
