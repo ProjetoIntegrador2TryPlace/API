@@ -1,8 +1,7 @@
 package com.tryplace.tryplace.controller
 
 import com.tryplace.tryplace.dto.TokenDto
-import com.tryplace.tryplace.model.LocadorModel
-import com.tryplace.tryplace.model.LocatarioModel
+import com.tryplace.tryplace.model.UsuarioModel
 import com.tryplace.tryplace.service.TokenService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -26,13 +25,10 @@ class AutenticacaoController(
 
         val autenticacao = manager.authenticate(tokenProvisorio)
 
-        val usuario = autenticacao.principal
+        val usuario = autenticacao.principal as UsuarioModel
 
-        val tokenJWT = when (usuario) {
-            is LocatarioModel -> tokenService.gerarToken(usuario)
-            is LocadorModel -> tokenService.gerarToken(usuario)
-            else -> throw RuntimeException("Tipo de usuário desconhecido")
-        }
+        // E então geramos o token diretamente para esse usuário
+        val tokenJWT = tokenService.gerarToken(usuario)
 
         return ResponseEntity.ok(TokenDto(tokenJWT))
     }
