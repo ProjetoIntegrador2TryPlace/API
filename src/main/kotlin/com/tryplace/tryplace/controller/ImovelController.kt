@@ -87,6 +87,9 @@ class ImovelController(
     fun buscarPorId(@PathVariable id: UUID): ImovelDto {
         return service.buscarImovelCadastradoPorId(id)
     }
-
-
+    @GetMapping("/meusImoveis")
+    fun listarMeusImoveis(@AuthenticationPrincipal donoLogado: UsuarioModel): ResponseEntity<List<ImovelDto>> {
+        val meusImoveis = service.listarMeusImoveis(donoLogado)
+        return ResponseEntity.ok(meusImoveis)
+    }
 }

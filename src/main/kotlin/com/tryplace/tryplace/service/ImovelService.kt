@@ -159,6 +159,11 @@ class ImovelService(
         repository.delete(imovelExistente)
     }
 
+    fun listarMeusImoveis(donoLogado: UsuarioModel): List<ImovelDto> {
+        val imoveis = repository.findAllByDono(donoLogado)
+        return imoveis.map { converterParaCadastradoDto(it) }
+    }
+
 
 
 }
