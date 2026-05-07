@@ -52,6 +52,11 @@ class ImovelModel(
     var estadoImovel: String,
     @Column(nullable = false)
     var cepImovel: String,
+    var latitude: Double? = null,
+    var longitude: Double? = null,
+
+    @Column(nullable = false)
+    var localizacaoExata: Boolean = false,
 
 
     @ManyToOne(fetch = FetchType.LAZY)

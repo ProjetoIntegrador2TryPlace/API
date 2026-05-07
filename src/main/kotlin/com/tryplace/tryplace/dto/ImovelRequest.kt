@@ -18,5 +18,7 @@ data class ImovelRequest(
     val bairroImovel: String,
     val cidadeImovel: String,
     val estadoImovel: String,
-    val cepImovel: String
+    val cepImovel: String,
+
+    val localizacaoExata: Boolean
 )

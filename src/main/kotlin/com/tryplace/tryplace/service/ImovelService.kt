@@ -17,7 +17,8 @@ import kotlin.String
 
 @Service
 class ImovelService(
-    private val repository: ImovelRepository
+    private val repository: ImovelRepository,
+    private val geocodingService: GeocodingService
 ) {
 
     fun buscarPorPrecoMinMax(precoMin: BigDecimal, precoMax: BigDecimal): List<ImovelDto> {
@@ -81,7 +82,10 @@ class ImovelService(
             bairroImovel = im.bairroImovel,
             cidadeImovel = im.cidadeImovel,
             estadoImovel = im.estadoImovel,
-            cepImovel = im.cepImovel
+            cepImovel = im.cepImovel,
+            latitude = im.latitude,
+            longitude = im.longitude,
+            localizacaoExata = im.localizacaoExata
         )
 
     }
@@ -104,8 +108,17 @@ class ImovelService(
             cidadeImovel = request.cidadeImovel.trim(),
             estadoImovel = request.estadoImovel.trim(),
             cepImovel = request.cepImovel.trim(),
-            dono = donoLogado
+            dono = donoLogado,
+            localizacaoExata = request.localizacaoExata
         )
+
+        val enderecoCompleto = "${imovel.ruaImovel}, ${imovel.numeroImovel}, ${imovel.cidadeImovel} - ${imovel.estadoImovel}"
+        val coordenadas = geocodingService.buscarCoordenadas(enderecoCompleto)
+
+        if (coordenadas != null) {
+            imovel.latitude = coordenadas.first
+            imovel.longitude = coordenadas.second
+        }
 
         val savedImovel = repository.save(imovel)
 
