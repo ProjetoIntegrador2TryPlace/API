@@ -1,8 +1,8 @@
 package com.tryplace.tryplace.controller
 
-import com.tryplace.tryplace.dto.LoginLocatarioRequest
+import com.tryplace.tryplace.dto.LoginUsuarioRequest
 import com.tryplace.tryplace.dto.TokenDto
-import com.tryplace.tryplace.model.LocatarioModel
+import com.tryplace.tryplace.model.UsuarioModel
 import com.tryplace.tryplace.service.TokenService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -13,18 +13,19 @@ import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
-@RequestMapping("/api/login")
-class AutenticacaoLocatarioController(
+@RequestMapping("api/login")
+class AutenticacaoUsuarioController(
     private val manager: AuthenticationManager,
     private val tokenService: TokenService
 ) {
     @PostMapping
-    fun efetuarLogin(@RequestBody dados: LoginLocatarioRequest): TokenDto {
+    fun efetuarLogin(@RequestBody dados: LoginUsuarioRequest): TokenDto {
         val tokenProvisorio = UsernamePasswordAuthenticationToken(dados.email, dados.senha)
 
-        val autenticacao = manager.authenticate(tokenProvisorio)
+        val autenticacao = manager.authenticate((tokenProvisorio))
 
-        val tokenJWT = tokenService.gerarToken(autenticacao.principal as LocatarioModel)
+        val tokenJWT = tokenService.gerarToken(usuario = autenticacao.principal as UsuarioModel)
+
 
         return TokenDto(tokenJWT)
     }

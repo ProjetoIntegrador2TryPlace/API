@@ -1,6 +1,6 @@
 package com.tryplace.tryplace.dto
 
-data class LoginLocatarioRequest(
+data class LoginUsuarioRequest(
     val email: String,
     val senha: String
 )

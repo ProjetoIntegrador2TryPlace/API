@@ -1,17 +1,23 @@
 package com.tryplace.tryplace.service
 
-import com.tryplace.tryplace.repository.LocatarioRepository
+import com.tryplace.tryplace.repository.UsuarioRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
-class LocatarioAutenticacao(private val repository: LocatarioRepository) : UserDetailsService {
-    override fun loadUserByUsername(username: String): UserDetails {
-        val usuario = repository.findByEmail(username)
-            ?: throw UsernameNotFoundException("Usuário não encontrado com o email")
+class AutenticacaoService(
+    private val usuarioRepository: UsuarioRepository,
+) : UserDetailsService {
 
-        return usuario
+    override fun loadUserByUsername(username: String): UserDetails {
+
+        val usuario = usuarioRepository.findByEmail(username)
+        if (usuario != null) {
+            return usuario
+        }
+
+        throw UsernameNotFoundException("Usuário não encontrado com o email informado")
     }
 }

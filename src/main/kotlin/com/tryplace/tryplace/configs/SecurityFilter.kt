@@ -1,6 +1,6 @@
 package com.tryplace.tryplace.configs
 
-import com.tryplace.tryplace.repository.LocatarioRepository
+import com.tryplace.tryplace.repository.UsuarioRepository
 import com.tryplace.tryplace.service.TokenService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -13,7 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class SecurityFilter(
     private val tokenService: TokenService,
-    private val repository: LocatarioRepository
+    private val usuarioRepository: UsuarioRepository,
 ) : OncePerRequestFilter() {
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
@@ -21,10 +21,11 @@ class SecurityFilter(
 
         if (tokenJWT != null) {
             val subject = tokenService.getSubject(tokenJWT)
-            val usuario = repository.findByEmail(subject)
+
+            val usuario = usuarioRepository.findByEmail(subject)
 
             if (usuario != null) {
-                val authentication = UsernamePasswordAuthenticationToken(usuario, null, usuario?.authorities)
+                val authentication = UsernamePasswordAuthenticationToken(usuario, null, usuario.authorities)
                 SecurityContextHolder.getContext().authentication = authentication
             }
         }

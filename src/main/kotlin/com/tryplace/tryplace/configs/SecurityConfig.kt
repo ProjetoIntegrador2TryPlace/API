@@ -3,13 +3,13 @@ package com.tryplace.tryplace.configs
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
@@ -25,15 +25,18 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers("/error").permitAll()
-                auth.requestMatchers("/api/locatario/**").permitAll()
+                auth.requestMatchers("/api/usuario", "/api/usuario/**").permitAll()
                 auth.requestMatchers("/api/login","/api/login/**").permitAll()
+                auth.requestMatchers(org.springframework.http.HttpMethod.GET,"/api/imovel/visitante/**").permitAll()
+                auth.requestMatchers("v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                auth.requestMatchers("/api/recuperacao/**").permitAll()
                 auth.anyRequest().authenticated()
             }
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
     @Bean
-    fun passwordEncoder(): BCryptPasswordEncoder {
+    fun passwordEncoder() : BCryptPasswordEncoder {
         return BCryptPasswordEncoder()
     }
 
