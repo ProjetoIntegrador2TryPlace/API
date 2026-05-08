@@ -1,39 +1,43 @@
 package com.tryplace.tryplace.service
 
-import com.tryplace.tryplace.model.LocatarioModel
-import com.tryplace.tryplace.repository.LocatarioRepository
+import com.tryplace.tryplace.model.UsuarioModel
+import com.tryplace.tryplace.repository.UsuarioRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import java.time.LocalDate
 import java.util.*
 
-class LocatarioAutenticacaoTest {
+class AutenticacaoServiceTest {
 
-    private lateinit var repository: LocatarioRepository
-    private lateinit var service: LocatarioAutenticacao
+    private lateinit var repository: UsuarioRepository
+    private lateinit var service: AutenticacaoService
 
     @BeforeEach
     fun setup() {
-        repository = Mockito.mock(LocatarioRepository::class.java)
-        service = LocatarioAutenticacao(repository)
+        repository = Mockito.mock(UsuarioRepository::class.java)
+        service = AutenticacaoService(repository)
     }
 
     @Test
     fun `deve retornar user details quando email for encontrado`() {
+
         val email = "teste@email.com"
-        val usuarioMock = LocatarioModel(
+
+        val usuarioMock = UsuarioModel(
             id = UUID.randomUUID(),
-            nome = "João",
+            nomeCompleto = "João",
             email = email,
-            telefone = "11999999999",
-            dataDeNascimento = "1990-01-01",
+            cpfCnpj = "12345678901",
+            telefone = "(88) 99999-9999",
+            dataDeNascimento = LocalDate.of(1990, 1, 1),
             senha = "hash"
         )
 
-        // Simula o banco de dados retornando o usuário
-        Mockito.`when`(repository.findByEmail(email)).thenReturn(usuarioMock)
+        Mockito.`when`(repository.findByEmail(email))
+            .thenReturn(usuarioMock)
 
         val result = service.loadUserByUsername(email)
 
@@ -43,10 +47,11 @@ class LocatarioAutenticacaoTest {
 
     @Test
     fun `deve lancar UsernameNotFoundException quando email nao existir`() {
+
         val email = "inexistente@email.com"
 
-        // Simula o banco não encontrando ninguém (retorna null)
-        Mockito.`when`(repository.findByEmail(email)).thenReturn(null)
+        Mockito.`when`(repository.findByEmail(email))
+            .thenReturn(null)
 
         val exception = assertThrows(UsernameNotFoundException::class.java) {
             service.loadUserByUsername(email)
