@@ -1,49 +1,38 @@
 package com.tryplace.tryplace.service
 
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
+import com.tryplace.tryplace.dto.GoogleGeocodingResponse
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
-class GeocodingService {
+class GeocodingService(
+    @Value("\${google.maps.api.key}") private val apiKey: String
+) {
 
     private val restTemplate = RestTemplate()
 
     fun buscarCoordenadas(endereco: String): Pair<Double, Double>? {
         try {
-            val url = "https://nominatim.openstreetmap.org/search?format=json&q={endereco}&limit=1"
+            val url = "https://maps.googleapis.com/maps/api/geocode/json?address={endereco}&key={key}"
 
-            val headers = HttpHeaders()
-            headers.set("User-Agent", "TryPlaceApp/1.0 (elpedrorenan08@gmail.com)")
-
-            val entity = HttpEntity<String>(headers)
-
-            val typeRef = object : ParameterizedTypeReference<List<Map<String, Any>>>() {}
-
-            val resposta = restTemplate.exchange(
+            val resposta = restTemplate.getForObject(
                 url,
-                HttpMethod.GET,
-                entity,
-                typeRef,
-                endereco
+                GoogleGeocodingResponse::class.java,
+                endereco,
+                apiKey
             )
 
-            val corpo = resposta.body
-
-            if (!corpo.isNullOrEmpty()) {
-                val local = corpo[0]
-                val lat = (local["lat"] as String).toDouble()
-                val lon = (local["lon"] as String).toDouble()
-                return Pair(lat, lon)
+            if (resposta != null && resposta.status == "OK" && resposta.results.isNotEmpty()) {
+                val location = resposta.results[0].geometry.location
+                return Pair(location.lat, location.lng)
             }
 
+            println("Aviso: Endereço não encontrado ou limite de requisições da API atingido.")
             return null
 
         } catch (e: Exception) {
-            println("Aviso: Falha ao buscar coordenadas na API de mapas. Motivo: ${e.message}")
+            println("Erro: Falha ao buscar coordenadas no Google Maps. Motivo: ${e.message}")
             return null
         }
     }
