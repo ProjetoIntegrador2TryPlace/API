@@ -17,4 +17,6 @@ interface ImovelRepository: JpaRepository<ImovelModel, UUID>{
     fun findByTipoImovel(tipoImovel: String): List<ImovelModel>
 
     fun findAllByDono(dono: UsuarioModel): List<ImovelModel>
+
+    fun findByNomeImovelContainingIgnoreCase(nomeImovel: String): List<ImovelModel>
 }

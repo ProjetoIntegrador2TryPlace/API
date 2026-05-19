@@ -48,6 +48,12 @@ class ImovelService(
         return converterParaCadastradoDto(imovel)
     }
 
+    fun buscarImovelPorNome(nomeImovel: String): List<ImovelDto> {
+        val imovel = repository.findByNomeImovelContainingIgnoreCase(nomeImovel)
+
+        return imovel.map { imovel -> converterParaCadastradoDto(imovel)}
+    }
+
 
     private fun converterParaVisitanteDto(im: ImovelModel) = ImovelVisitanteDto(
         id = im.id!!,

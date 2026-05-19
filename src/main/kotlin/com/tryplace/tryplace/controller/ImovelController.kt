@@ -92,4 +92,14 @@ class ImovelController(
         val meusImoveis = service.listarMeusImoveis(donoLogado)
         return ResponseEntity.ok(meusImoveis)
     }
+    @GetMapping("/nome")
+    fun buscarImovelPorNome(@RequestParam(name = "busca") nomeImovel: String): ResponseEntity<List<ImovelDto>> {
+        val imoveisPorNome = service.buscarImovelPorNome(nomeImovel)
+        if (imoveisPorNome.isEmpty()) {
+            return ResponseEntity.noContent().build()
+        }
+
+        return ResponseEntity.ok(imoveisPorNome)
+
+    }
 }
