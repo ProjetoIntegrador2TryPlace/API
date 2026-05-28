@@ -30,6 +30,7 @@ class SecurityConfig(
                 auth.requestMatchers(org.springframework.http.HttpMethod.GET,"/api/imovel/visitante/**").permitAll()
                 auth.requestMatchers("v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 auth.requestMatchers("/api/recuperacao/**").permitAll()
+                auth.requestMatchers("/api/avaliacoes/**").permitAll()
                 auth.anyRequest().authenticated()
             }
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)

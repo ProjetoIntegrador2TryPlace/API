@@ -6,6 +6,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import java.time.LocalDateTime
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.core.AuthenticationException
 
     @RestControllerAdvice
     class GlobalExceptionHandler {
@@ -60,5 +62,27 @@ import java.time.LocalDateTime
                 "message" to ex.message
             )
             return ResponseEntity(body, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
+        @ExceptionHandler(BadCredentialsException::class)
+        fun handleBadCredentials(ex: BadCredentialsException): ResponseEntity<Any> {
+            val body = mapOf(
+                "timestamp" to LocalDateTime.now(),
+                "status" to HttpStatus.UNAUTHORIZED.value(),
+                "error" to "Não autorizado",
+                "message" to "E-mail ou senha incorretos."
+            )
+            return ResponseEntity(body, HttpStatus.UNAUTHORIZED)
+        }
+
+        @ExceptionHandler(AuthenticationException::class)
+        fun handleAuthenticationException(ex: AuthenticationException): ResponseEntity<Any> {
+            val body = mapOf(
+                "timestamp" to LocalDateTime.now(),
+                "status" to HttpStatus.UNAUTHORIZED.value(),
+                "error" to "Falha na autenticação",
+                "message" to ex.message
+            )
+            return ResponseEntity(body, HttpStatus.UNAUTHORIZED)
         }
 }

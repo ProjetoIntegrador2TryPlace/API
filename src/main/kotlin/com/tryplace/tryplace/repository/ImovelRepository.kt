@@ -1,7 +1,7 @@
 package com.tryplace.tryplace.repository
 
 import com.tryplace.tryplace.model.ImovelModel
-import jakarta.persistence.Id
+import com.tryplace.tryplace.model.UsuarioModel
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
@@ -15,4 +15,8 @@ interface ImovelRepository: JpaRepository<ImovelModel, UUID>{
     fun findByValorAluguelBetween(precoMin: BigDecimal, PrecoMax: BigDecimal): List<ImovelModel>
 
     fun findByTipoImovel(tipoImovel: String): List<ImovelModel>
+
+    fun findAllByDono(dono: UsuarioModel): List<ImovelModel>
+
+    fun findByNomeImovelContainingIgnoreCase(nomeImovel: String): List<ImovelModel>
 }

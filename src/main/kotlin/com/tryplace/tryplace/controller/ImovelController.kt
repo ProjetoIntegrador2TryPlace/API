@@ -87,6 +87,19 @@ class ImovelController(
     fun buscarPorId(@PathVariable id: UUID): ImovelDto {
         return service.buscarImovelCadastradoPorId(id)
     }
+    @GetMapping("/meusImoveis")
+    fun listarMeusImoveis(@AuthenticationPrincipal donoLogado: UsuarioModel): ResponseEntity<List<ImovelDto>> {
+        val meusImoveis = service.listarMeusImoveis(donoLogado)
+        return ResponseEntity.ok(meusImoveis)
+    }
+    @GetMapping("/nome")
+    fun buscarImovelPorNome(@RequestParam(name = "busca") nomeImovel: String): ResponseEntity<List<ImovelDto>> {
+        val imoveisPorNome = service.buscarImovelPorNome(nomeImovel)
+        if (imoveisPorNome.isEmpty()) {
+            return ResponseEntity.noContent().build()
+        }
 
+        return ResponseEntity.ok(imoveisPorNome)
 
+    }
 }

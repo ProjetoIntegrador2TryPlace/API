@@ -22,6 +22,10 @@ data class ImovelDto(
     val bairroImovel: String,
     val cidadeImovel: String,
     val estadoImovel: String,
-    val cepImovel: String
+    val cepImovel: String,
+    val latitude: Double?,
+    val longitude: Double?,
+    val localizacaoExata: Boolean
+
 
 )
