@@ -31,6 +31,7 @@ class SecurityConfig(
                 auth.requestMatchers("v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 auth.requestMatchers("/api/recuperacao/**").permitAll()
                 auth.requestMatchers("/api/avaliacoes/**").permitAll()
+                auth.requestMatchers("/api/geocode/**").permitAll()
                 auth.anyRequest().authenticated()
             }
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)

@@ -10,11 +10,10 @@ class RecuperacaoSenhaController(private val service: RecuperacaoSenhaService) {
 
     @PostMapping("/solicitar")
     fun solicitar(@RequestParam email: String): ResponseEntity<Map<String, String>> {
-        val codigoGerado = service.solicitarCodigo(email)
+        service.solicitarCodigo(email)
 
         return ResponseEntity.ok(mapOf(
-            "mensagem" to "Código gerado com sucesso (modo local)",
-            "codigo" to codigoGerado
+            "mensagem" to "Código de verificação foi enviado com sucesso"
         ))
     }
 

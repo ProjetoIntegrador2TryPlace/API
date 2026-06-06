@@ -13,16 +13,17 @@ import kotlin.random.Random
 class RecuperacaoSenhaService(
     private val usuarioRepository: UsuarioRepository,
     private val tokenRepository: TokenRecuperacaoSenhaRepository,
-    private val passwordEncoder: PasswordEncoder
-    // private val mailSender: JavaMailSender
+    private val passwordEncoder: PasswordEncoder,
+    private val emailService: EmailService
 ) {
 
     @Transactional
-    fun solicitarCodigo(email: String): String {
+    fun solicitarCodigo(email: String) {
         val usuario = usuarioRepository.findByEmail(email)
             ?: throw RuntimeException("E-mail não encontrado")
 
         val codigo = Random.nextInt(100000, 999999).toString()
+
         val token = TokenRecuperacaoSenhaModel(
             codigoToken = codigo,
             dataExpiracao = LocalDateTime.now().plusMinutes(15),
@@ -30,9 +31,7 @@ class RecuperacaoSenhaService(
         )
         tokenRepository.save(token)
 
-        println("TryPlace - Código gerado para $email: $codigo")
-        
-        return codigo
+        emailService.enviarCodigoRecuperacao(email, codigo)
     }
 
     @Transactional
@@ -44,6 +43,7 @@ class RecuperacaoSenhaService(
         val usuario = token.usuario
         usuario.senha = passwordEncoder.encode(novaSenhaLimpa)
         usuarioRepository.save(usuario)
+
         tokenRepository.delete(token)
     }
 }

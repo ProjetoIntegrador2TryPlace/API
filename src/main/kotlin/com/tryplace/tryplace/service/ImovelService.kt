@@ -118,7 +118,7 @@ class ImovelService(
             localizacaoExata = request.localizacaoExata
         )
 
-        val enderecoCompleto = "${imovel.ruaImovel}, ${imovel.numeroImovel}, ${imovel.cidadeImovel} - ${imovel.estadoImovel}"
+        val enderecoCompleto = "${imovel.ruaImovel}, ${imovel.numeroImovel}, ${imovel.bairroImovel}, ${imovel.cidadeImovel} - ${imovel.estadoImovel}"
         val coordenadas = geocodingService.buscarCoordenadas(enderecoCompleto)
 
         if (coordenadas != null) {
@@ -162,6 +162,17 @@ class ImovelService(
         imovelExistente.cidadeImovel = request.cidadeImovel.trim()
         imovelExistente.estadoImovel = request.estadoImovel.trim()
         imovelExistente.cepImovel = request.cepImovel.trim()
+
+        val enderecoCompleto = "${imovelExistente.ruaImovel}, ${imovelExistente.numeroImovel}, ${imovelExistente.bairroImovel}, ${imovelExistente.cidadeImovel} - ${imovelExistente.estadoImovel}"
+        val coordenadas = geocodingService.buscarCoordenadas(enderecoCompleto)
+
+        if (coordenadas != null) {
+            imovelExistente.latitude = coordenadas.first
+            imovelExistente.longitude = coordenadas.second
+        } else {
+            imovelExistente.latitude = null
+            imovelExistente.longitude = null
+        }
 
         val imovelAtualizado = repository.save(imovelExistente)
 
