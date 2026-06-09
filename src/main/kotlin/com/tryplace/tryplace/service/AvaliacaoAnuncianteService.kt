@@ -2,8 +2,10 @@ package com.tryplace.tryplace.service
 
 import com.tryplace.tryplace.model.AvaliacaoAnuncianteModel
 import com.tryplace.tryplace.repository.AvaliacaoAnuncianteRepository
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 class AvaliacaoAnuncianteService(
@@ -11,7 +13,7 @@ class AvaliacaoAnuncianteService(
 ) {
 
     @Transactional
-    fun criarAvaliacao(avaliadorId: Long, anuncianteId: Long, nota: Int, comentarioRaw: String?): AvaliacaoAnuncianteModel {
+    fun criarAvaliacao(avaliadorId: UUID, anuncianteId: UUID, nota: Int, comentarioRaw: String?): AvaliacaoAnuncianteModel {
 
         if (avaliacaoAnuncianteRepository.existsByAvaliadorIdAndAnuncianteId(avaliadorId, anuncianteId)) {
             throw RuntimeException("Usuário já avaliou este anunciante.")
@@ -29,6 +31,26 @@ class AvaliacaoAnuncianteService(
         return avaliacaoAnuncianteRepository.save(novaAvaliacao)
     }
 
+    fun listarAvaliacoes(anuncianteId: UUID, pageable: Pageable): List<AvaliacaoAnuncianteModel> {
+        return avaliacaoAnuncianteRepository.findByAnuncianteIdOrderByDataCriacaoDesc(anuncianteId, pageable).content
+    }
+
+    fun calcularMediaAvaliacoes(anuncianteId: UUID): Double {
+        val avaliacoes = avaliacaoAnuncianteRepository.findByAnuncianteId(anuncianteId)
+        return if (avaliacoes.isNotEmpty()) {
+            avaliacoes.map { it.nota }.average()
+        } else {
+            0.0
+        }
+    }
+
+    fun contarAvaliacoes(anuncianteId: UUID): Int {
+        return avaliacaoAnuncianteRepository.findByAnuncianteId(anuncianteId).size
+    }
+
+    fun jaAvaliou(avaliadorId: UUID, anuncianteId: UUID): Boolean {
+        return avaliacaoAnuncianteRepository.existsByAvaliadorIdAndAnuncianteId(avaliadorId, anuncianteId)
+    }
 
     private fun aplicarFiltroDePalavras(texto: String?): String? {
         if (texto.isNullOrBlank()) return texto

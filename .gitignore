@@ -40,5 +40,4 @@ out/
 .kotlin
 
 ### Configurações Locais e Chaves de API ###
-src/main/resources/application.propertie
-
+src/main/resources/application.properties

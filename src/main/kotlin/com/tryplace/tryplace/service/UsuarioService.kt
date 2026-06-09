@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.Period
+import java.util.UUID
 
 @Service
 class UsuarioService(
@@ -25,19 +26,22 @@ class UsuarioService(
 
         return when (limpo.length) {
             11 -> "***.${limpo.substring(3,6)}.${limpo.substring(6,9)}-**"
-
             14 -> "**.${limpo.substring(2, 5)}.${limpo.substring(5, 8)}/****-**"
-
             else -> doc
         }
     }
 
+    fun buscarPerfil(id: UUID): UsuarioDto {
+        val usuario = repository.findById(id).orElseThrow {
+            RecursoNaoEncontradoException("Usuário não encontrado")
+        }
+        return converterParaDto(usuario)
+    }
 
     fun atualizarPerfil(usuarioLogado: UsuarioModel, request: AtualizarPerfilRequest): UsuarioDto {
         val usuario = repository.findById(usuarioLogado.id!!).orElseThrow {
             RecursoNaoEncontradoException("Usuário não encontrado")
         }
-
 
         request.cpfCnpj?.let {
             val documentoLimpo = it.filter { char -> char.isDigit() }
@@ -46,7 +50,6 @@ class UsuarioService(
                 throw RuntimeException("Este CPF/CNPJ já está em uso por outra conta.")
             }
             usuario.cpfCnpj = documentoLimpo
-
         }
 
         request.nomeEmpresa?.let { usuario.nomeEmpresa = it }
@@ -62,7 +65,6 @@ class UsuarioService(
     }
 
     fun cadastrarUsuario(request: UsuarioRequest, ipCliente: String): UsuarioDto {
-
         if (repository.existsByEmail(request.email)) {
             throw RegraDeNegocioException("E-mail já cadastrado no sistema.")
         }
@@ -78,7 +80,6 @@ class UsuarioService(
             }
         }
 
-
         val novoUsuario = UsuarioModel(
             nomeCompleto = request.nomeCompleto,
             email = request.email,
@@ -92,13 +93,11 @@ class UsuarioService(
         )
 
         val usuarioSalvo = repository.save(novoUsuario)
-
         return converterParaDto(usuarioSalvo)
     }
 
     private fun converterParaDto(usuario: UsuarioModel): UsuarioDto {
         val idade = Period.between(usuario.dataDeNascimento, LocalDate.now()).years
-
         val docLimpo = usuario.cpfCnpj.filter { it.isDigit() }
         val tipo = if (docLimpo.length == 14) "EMPRESA" else "PESSOA FISICA"
 
@@ -106,7 +105,7 @@ class UsuarioService(
             id = usuario.id!!,
             nomeCompleto = usuario.nomeCompleto,
             email = usuario.email,
-            cpfCnpj = mascararDocumento(usuario.cpfCnpj)?: usuario.cpfCnpj,
+            cpfCnpj = mascararDocumento(usuario.cpfCnpj) ?: usuario.cpfCnpj,
             telefone = usuario.telefone,
             dataDeNascimento = usuario.dataDeNascimento,
             isMaiorDeIdade = idade >= 18,

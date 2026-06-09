@@ -25,7 +25,6 @@ data class ImovelDto(
     val cepImovel: String,
     val latitude: Double?,
     val longitude: Double?,
-    val localizacaoExata: Boolean
-
-
+    val localizacaoExata: Boolean,
+    val donoId: UUID
 )

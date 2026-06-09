@@ -74,7 +74,7 @@ class ImovelService(
             nomeImovel = im.nomeImovel,
             imagemImovel = im.imagemImovel,
             valorAluguel = im.valorAluguel,
-            avaliacaoImovel = im.avaliacaoImovel ,
+            avaliacaoImovel = im.avaliacaoImovel,
             descricaoImovel = im.descricaoImovel,
             quantidadeBanheiro = im.quantidadeBanheiro,
             quantidadeQuarto = im.quantidadeQuarto,
@@ -91,9 +91,9 @@ class ImovelService(
             cepImovel = im.cepImovel,
             latitude = im.latitude,
             longitude = im.longitude,
-            localizacaoExata = im.localizacaoExata
+            localizacaoExata = im.localizacaoExata,
+            donoId = im.dono.id!!  // ✅ ID do anunciante para avaliação
         )
-
     }
 
     fun criarImovel (request: ImovelRequest, donoLogado: UsuarioModel): ImovelDto {
@@ -129,7 +129,6 @@ class ImovelService(
         val savedImovel = repository.save(imovel)
 
         return converterParaCadastradoDto(savedImovel)
-
     }
 
     fun listarImovel(paginacao: Pageable): Page<ImovelDto> {
@@ -193,7 +192,4 @@ class ImovelService(
         val imoveis = repository.findAllByDono(donoLogado)
         return imoveis.map { converterParaCadastradoDto(it) }
     }
-
-
-
 }
