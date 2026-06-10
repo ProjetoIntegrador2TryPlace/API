@@ -17,7 +17,6 @@ class RecuperacaoSenhaService(
     private val emailService: EmailService
 ) {
 
-    @Transactional
     fun solicitarCodigo(email: String) {
         val usuario = usuarioRepository.findByEmail(email)
             ?: throw RuntimeException("E-mail não encontrado")
@@ -29,7 +28,7 @@ class RecuperacaoSenhaService(
             dataExpiracao = LocalDateTime.now().plusMinutes(15),
             usuario = usuario
         )
-        tokenRepository.save(token)
+        tokenRepository.save(token)  // JPA cria transação internamente
 
         emailService.enviarCodigoRecuperacao(email, codigo)
     }
