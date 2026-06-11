@@ -81,6 +81,7 @@ class ImovelService(
             tipoImovel = im.tipoImovel,
             telefoneLocador = im.dono.telefone,
             tipoAnunciante = tipoDono,
+            nomeAnunciante = im.dono.nomeCompleto,
             wifi = im.wifi,
             cafeDaManha = im.cafeDaManha,
             ruaImovel = im.ruaImovel,
@@ -92,7 +93,7 @@ class ImovelService(
             latitude = im.latitude,
             longitude = im.longitude,
             localizacaoExata = im.localizacaoExata,
-            donoId = im.dono.id!!  // ✅ ID do anunciante para avaliação
+            donoId = im.dono.id!!
         )
     }
 
@@ -191,5 +192,11 @@ class ImovelService(
     fun listarMeusImoveis(donoLogado: UsuarioModel): List<ImovelDto> {
         val imoveis = repository.findAllByDono(donoLogado)
         return imoveis.map { converterParaCadastradoDto(it) }
+    }
+
+    fun buscarImovelVisitantePorId(id: UUID): ImovelVisitanteDto {
+        val imovel = repository.findById(id)
+            .orElseThrow { RecursoNaoEncontradoException("Imovel com $id não encontrado") }
+        return converterParaVisitanteDto(imovel)
     }
 }
