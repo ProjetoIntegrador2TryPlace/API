@@ -17,9 +17,14 @@ class RecuperacaoSenhaService(
     private val emailService: EmailService
 ) {
 
-    fun solicitarCodigo(email: String) {
+    @Transactional
+    fun solicitarCodigo(email: String): String {
         val usuario = usuarioRepository.findByEmail(email)
             ?: throw RuntimeException("E-mail não encontrado")
+
+        tokenRepository.findAll()
+            .filter { it.usuario.id == usuario.id }
+            .forEach { tokenRepository.delete(it) }
 
         val codigo = Random.nextInt(100000, 999999).toString()
 
@@ -28,13 +33,15 @@ class RecuperacaoSenhaService(
             dataExpiracao = LocalDateTime.now().plusMinutes(15),
             usuario = usuario
         )
-        tokenRepository.save(token)  // JPA cria transação internamente
+        tokenRepository.save(token)
 
         emailService.enviarCodigoRecuperacao(email, codigo)
+
+        return "Código de recuperação enviado com sucesso"
     }
 
     @Transactional
-    fun redefinirSenha(codigo: String, novaSenhaLimpa: String) {
+    fun redefinirSenha(codigo: String, novaSenhaLimpa: String): String {
         val token = tokenRepository.findByCodigoToken(codigo)
             .filter { !it.isExpirado() }
             .orElseThrow { RuntimeException("Código inválido ou expirado") }
@@ -44,5 +51,7 @@ class RecuperacaoSenhaService(
         usuarioRepository.save(usuario)
 
         tokenRepository.delete(token)
+
+        return "Senha redefinida com sucesso"
     }
 }

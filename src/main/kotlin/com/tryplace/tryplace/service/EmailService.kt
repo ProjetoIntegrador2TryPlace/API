@@ -15,8 +15,13 @@ class EmailService(
 
     private val logger = LoggerFactory.getLogger(EmailService::class.java)
 
-    @Async
+    @Async("taskExecutor")
     fun enviarCodigoRecuperacao(emailDestino: String, codigo: String) {
+        if (!emailDestino.matches(Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"))) {
+            logger.warn("⚠️ Email inválido, não enviado: $emailDestino")
+            return
+        }
+
         val mensagem = SimpleMailMessage().apply {
             setFrom(remetente)
             setTo(emailDestino)
@@ -41,6 +46,7 @@ class EmailService(
             logger.info("✅ Email de recuperação enviado para: $emailDestino")
         } catch (e: Exception) {
             logger.error("❌ Falha ao enviar email para $emailDestino: ${e.message}", e)
+            throw RuntimeException("Falha ao enviar email de recuperação", e)
         }
     }
 }
