@@ -13,8 +13,8 @@ import kotlin.random.Random
 class RecuperacaoSenhaService(
     private val usuarioRepository: UsuarioRepository,
     private val tokenRepository: TokenRecuperacaoSenhaRepository,
-    private val passwordEncoder: PasswordEncoder
-    // private val mailSender: JavaMailSender
+    private val passwordEncoder: PasswordEncoder,
+    private val emailService: EmailService
 ) {
 
     @Transactional
@@ -22,7 +22,12 @@ class RecuperacaoSenhaService(
         val usuario = usuarioRepository.findByEmail(email)
             ?: throw RuntimeException("E-mail não encontrado")
 
+        tokenRepository.findAll()
+            .filter { it.usuario.id == usuario.id }
+            .forEach { tokenRepository.delete(it) }
+
         val codigo = Random.nextInt(100000, 999999).toString()
+
         val token = TokenRecuperacaoSenhaModel(
             codigoToken = codigo,
             dataExpiracao = LocalDateTime.now().plusMinutes(15),
@@ -30,13 +35,13 @@ class RecuperacaoSenhaService(
         )
         tokenRepository.save(token)
 
-        println("TryPlace - Código gerado para $email: $codigo")
-        
-        return codigo
+        emailService.enviarCodigoRecuperacao(email, codigo)
+
+        return "Código de recuperação enviado com sucesso"
     }
 
     @Transactional
-    fun redefinirSenha(codigo: String, novaSenhaLimpa: String) {
+    fun redefinirSenha(codigo: String, novaSenhaLimpa: String): String {
         val token = tokenRepository.findByCodigoToken(codigo)
             .filter { !it.isExpirado() }
             .orElseThrow { RuntimeException("Código inválido ou expirado") }
@@ -44,6 +49,9 @@ class RecuperacaoSenhaService(
         val usuario = token.usuario
         usuario.senha = passwordEncoder.encode(novaSenhaLimpa)
         usuarioRepository.save(usuario)
+
         tokenRepository.delete(token)
+
+        return "Senha redefinida com sucesso"
     }
 }

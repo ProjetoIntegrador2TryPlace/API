@@ -15,6 +15,7 @@ data class ImovelDto(
     val tipoImovel: String,
     val telefoneLocador: String,
     val tipoAnunciante: String,
+    val nomeAnunciante: String,
     val wifi: Boolean,
     val cafeDaManha: Boolean,
     val ruaImovel: String,
@@ -25,7 +26,6 @@ data class ImovelDto(
     val cepImovel: String,
     val latitude: Double?,
     val longitude: Double?,
-    val localizacaoExata: Boolean
-
-
+    val localizacaoExata: Boolean,
+    val donoId: UUID
 )

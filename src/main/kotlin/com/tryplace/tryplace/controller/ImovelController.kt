@@ -43,6 +43,11 @@ class ImovelController(
         return service.buscaPorPrecoMaxVisitante(precoMax)
     }
 
+    @GetMapping("/visitante/{id}")
+    fun buscarDetalhesVisitante(@PathVariable id: UUID): ImovelVisitanteDto {
+        return service.buscarImovelVisitantePorId(id)
+    }
+
     @GetMapping("/visitante/tipoImovel/{tipoImovel}")
     fun buscarPorTipoImovel(@PathVariable tipoImovel: String): List<ImovelVisitanteDto> {
         return service.buscaPorTipoImovelVisitante(tipoImovel)

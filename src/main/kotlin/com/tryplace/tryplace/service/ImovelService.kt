@@ -74,13 +74,14 @@ class ImovelService(
             nomeImovel = im.nomeImovel,
             imagemImovel = im.imagemImovel,
             valorAluguel = im.valorAluguel,
-            avaliacaoImovel = im.avaliacaoImovel ,
+            avaliacaoImovel = im.avaliacaoImovel,
             descricaoImovel = im.descricaoImovel,
             quantidadeBanheiro = im.quantidadeBanheiro,
             quantidadeQuarto = im.quantidadeQuarto,
             tipoImovel = im.tipoImovel,
             telefoneLocador = im.dono.telefone,
             tipoAnunciante = tipoDono,
+            nomeAnunciante = im.dono.nomeCompleto,
             wifi = im.wifi,
             cafeDaManha = im.cafeDaManha,
             ruaImovel = im.ruaImovel,
@@ -91,9 +92,9 @@ class ImovelService(
             cepImovel = im.cepImovel,
             latitude = im.latitude,
             longitude = im.longitude,
-            localizacaoExata = im.localizacaoExata
+            localizacaoExata = im.localizacaoExata,
+            donoId = im.dono.id!!
         )
-
     }
 
     fun criarImovel (request: ImovelRequest, donoLogado: UsuarioModel): ImovelDto {
@@ -118,7 +119,7 @@ class ImovelService(
             localizacaoExata = request.localizacaoExata
         )
 
-        val enderecoCompleto = "${imovel.ruaImovel}, ${imovel.numeroImovel}, ${imovel.cidadeImovel} - ${imovel.estadoImovel}"
+        val enderecoCompleto = "${imovel.ruaImovel}, ${imovel.numeroImovel}, ${imovel.bairroImovel}, ${imovel.cidadeImovel} - ${imovel.estadoImovel}"
         val coordenadas = geocodingService.buscarCoordenadas(enderecoCompleto)
 
         if (coordenadas != null) {
@@ -129,7 +130,6 @@ class ImovelService(
         val savedImovel = repository.save(imovel)
 
         return converterParaCadastradoDto(savedImovel)
-
     }
 
     fun listarImovel(paginacao: Pageable): Page<ImovelDto> {
@@ -163,6 +163,17 @@ class ImovelService(
         imovelExistente.estadoImovel = request.estadoImovel.trim()
         imovelExistente.cepImovel = request.cepImovel.trim()
 
+        val enderecoCompleto = "${imovelExistente.ruaImovel}, ${imovelExistente.numeroImovel}, ${imovelExistente.bairroImovel}, ${imovelExistente.cidadeImovel} - ${imovelExistente.estadoImovel}"
+        val coordenadas = geocodingService.buscarCoordenadas(enderecoCompleto)
+
+        if (coordenadas != null) {
+            imovelExistente.latitude = coordenadas.first
+            imovelExistente.longitude = coordenadas.second
+        } else {
+            imovelExistente.latitude = null
+            imovelExistente.longitude = null
+        }
+
         val imovelAtualizado = repository.save(imovelExistente)
 
         return converterParaCadastradoDto(imovelAtualizado)
@@ -183,6 +194,9 @@ class ImovelService(
         return imoveis.map { converterParaCadastradoDto(it) }
     }
 
-
-
+    fun buscarImovelVisitantePorId(id: UUID): ImovelVisitanteDto {
+        val imovel = repository.findById(id)
+            .orElseThrow { RecursoNaoEncontradoException("Imovel com $id não encontrado") }
+        return converterParaVisitanteDto(imovel)
+    }
 }

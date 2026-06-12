@@ -1,6 +1,7 @@
 package com.tryplace.tryplace.controller
 
 import com.tryplace.tryplace.service.RecuperacaoSenhaService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -10,17 +11,30 @@ class RecuperacaoSenhaController(private val service: RecuperacaoSenhaService) {
 
     @PostMapping("/solicitar")
     fun solicitar(@RequestParam email: String): ResponseEntity<Map<String, String>> {
-        val codigoGerado = service.solicitarCodigo(email)
+        service.solicitarCodigo(email)
 
-        return ResponseEntity.ok(mapOf(
-            "mensagem" to "Código gerado com sucesso (modo local)",
-            "codigo" to codigoGerado
-        ))
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(
+                mapOf(
+                    "mensagem" to "Código de verificação foi enviado com sucesso"
+                )
+            )
     }
 
     @PostMapping("/redefinir")
-    fun redefinir(@RequestParam codigo: String, @RequestParam novaSenha: String): ResponseEntity<Map<String, String>> {
+    fun redefinir(
+        @RequestParam codigo: String,
+        @RequestParam novaSenha: String
+    ): ResponseEntity<Map<String, String>> {
         service.redefinirSenha(codigo, novaSenha)
-        return ResponseEntity.ok(mapOf("mensagem" to "Senha redefinida com sucesso!"))
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(
+                mapOf(
+                    "mensagem" to "Senha redefinida com sucesso!"
+                )
+            )
     }
 }
