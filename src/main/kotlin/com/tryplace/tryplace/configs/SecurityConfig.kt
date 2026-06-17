@@ -33,6 +33,7 @@ class SecurityConfig(
                 auth.requestMatchers("/api/avaliacoes/**").permitAll()
                 auth.requestMatchers("/api/geocode/**").permitAll()
                 auth.requestMatchers("/api/avaliacoesImovel/**").permitAll()
+                auth.requestMatchers("/api/favoritos/**").permitAll()
                 auth.anyRequest().authenticated()
             }
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)
