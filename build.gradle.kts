@@ -67,3 +67,6 @@ allOpen {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+springBoot {
+    mainClass.set("com.tryplace.tryplace.TryplaceApplicationKt")
+}
