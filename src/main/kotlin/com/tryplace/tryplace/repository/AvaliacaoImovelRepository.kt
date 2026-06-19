@@ -10,6 +10,8 @@ import java.util.UUID
 @Repository
 interface AvaliacaoImovelRepository : JpaRepository<AvaliacaoImovelModel, Long>{
     fun existsByAvaliadorIdAndImovelId(avaliadorId: UUID, imovelId: UUID) : Boolean
-    fun findByAvaliadorIdOrderByDataCriacaoDesc(imovelId: UUID, pageable: Pageable): Page<AvaliacaoImovelModel>
-    fun findByAvaliadorId(imovelId: UUID): List<AvaliacaoImovelModel>
+
+    fun findByImovelIdOrderByDataCriacaoDesc(imovelId: UUID, pageable: Pageable): Page<AvaliacaoImovelModel>
+
+    fun findByImovelId(imovelId: UUID): List<AvaliacaoImovelModel>
 }

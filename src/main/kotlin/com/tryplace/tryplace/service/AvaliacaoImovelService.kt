@@ -31,11 +31,11 @@ class AvaliacaoImovelService(
     }
 
     fun listarAvaliacoesImovel(imovelId: UUID, pageable: Pageable): List<AvaliacaoImovelModel>{
-        return avaliacaoImovelRepository.findByAvaliadorIdOrderByDataCriacaoDesc(imovelId, pageable).content
+        return avaliacaoImovelRepository.findByImovelIdOrderByDataCriacaoDesc(imovelId, pageable).content
     }
 
     fun calcularMediaAvaliacoes(imovelId: UUID): Double {
-        val avaliacoes = avaliacaoImovelRepository.findByAvaliadorId(imovelId)
+        val avaliacoes = avaliacaoImovelRepository.findByImovelId(imovelId)
         return if (avaliacoes.isNotEmpty()) {
             avaliacoes.map { it.nota }.average()
         } else {
@@ -44,7 +44,7 @@ class AvaliacaoImovelService(
     }
 
     fun contarAvaliacoes(imovelId: UUID): Int {
-        return avaliacaoImovelRepository.findByAvaliadorId(imovelId).size
+        return avaliacaoImovelRepository.findByImovelId(imovelId).size
     }
 
     fun jaAvaliou(avaliadorId: UUID, imovelId: UUID): Boolean {
