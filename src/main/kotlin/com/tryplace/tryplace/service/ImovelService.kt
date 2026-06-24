@@ -6,6 +6,7 @@ import com.tryplace.tryplace.dto.ImovelVisitanteDto
 import com.tryplace.tryplace.exceptions.RecursoNaoEncontradoException
 import com.tryplace.tryplace.exceptions.RegraDeNegocioException
 import com.tryplace.tryplace.model.ImovelModel
+import com.tryplace.tryplace.model.StatusImovel
 import com.tryplace.tryplace.model.UsuarioModel
 import com.tryplace.tryplace.repository.ImovelRepository
 import org.springframework.data.domain.Page
@@ -72,6 +73,7 @@ class ImovelService(
         return ImovelDto(
             id = im.id!!,
             nomeImovel = im.nomeImovel,
+            status = im.status.name.lowercase(),
             imagemImovel = im.imagemImovel,
             valorAluguel = im.valorAluguel,
             avaliacaoImovel = im.avaliacaoImovel,
@@ -198,5 +200,26 @@ class ImovelService(
         val imovel = repository.findById(id)
             .orElseThrow { RecursoNaoEncontradoException("Imovel com $id não encontrado") }
         return converterParaVisitanteDto(imovel)
+    }
+
+    fun alterarStatusImovel(id: UUID, novoStatusStr: String, donoLogado: UsuarioModel): ImovelDto {
+        val imovelExistente = repository.findById(id).orElseThrow {
+            RecursoNaoEncontradoException("Imóvel com ID $id não encontrado")
+        }
+
+        if (imovelExistente.dono.id != donoLogado.id) {
+            throw RegraDeNegocioException("Você não tem permissão para alterar o status desse imóvel")
+        }
+
+        val statusEnum = try {
+            StatusImovel.valueOf(novoStatusStr.uppercase())
+        } catch (e: IllegalArgumentException) {
+            throw RegraDeNegocioException("Status inválido. Use 'ativo' ou 'inativo'.")
+        }
+
+        imovelExistente.status = statusEnum
+        val imovelAtualizado = repository.save(imovelExistente)
+
+        return converterParaCadastradoDto(imovelAtualizado)
     }
 }

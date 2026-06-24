@@ -6,6 +6,7 @@ import java.util.UUID
 data class ImovelDto(
     val id: UUID,
     val nomeImovel: String,
+    val status: String,
     val imagemImovel: String,
     val valorAluguel: BigDecimal,
     val avaliacaoImovel: String,

@@ -4,6 +4,8 @@ import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -22,6 +24,9 @@ class ImovelModel(
     var id: UUID? = null,
     @Column(nullable = false)
     var nomeImovel: String,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var status : StatusImovel = StatusImovel.ATIVO,
     @Column(nullable = false)
     var imagemImovel: String,
     @Column(nullable = false)
