@@ -35,8 +35,10 @@ class ImovelController(
 
 
     @GetMapping("/visitante")
-    fun listarParaVisitante(): List<ImovelVisitanteDto> {
-        return service.listarImovelTodos()
+    fun listarParaVisitante(
+        @PageableDefault(size = 10, page = 0) paginacao: Pageable
+    ): Page<ImovelVisitanteDto> {
+        return service.listarImovelTodos(paginacao)
     }
     @GetMapping("/visitante/filtroPrecoMax/{precoMax}")
     fun buscarPorPrecoMax(@PathVariable precoMax: BigDecimal): List<ImovelVisitanteDto> {

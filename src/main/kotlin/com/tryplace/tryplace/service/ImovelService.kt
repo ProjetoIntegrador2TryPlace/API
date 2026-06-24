@@ -29,8 +29,8 @@ class ImovelService(
         return repository.findByValorAluguelBetween(precoMin, precoMax).map { converterParaCadastradoDto(it) }
     }
 
-    fun listarImovelTodos(): List<ImovelVisitanteDto> {
-        return repository.findAll().map { converterParaVisitanteDto(it) }
+    fun listarImovelTodos(paginacao: Pageable): Page<ImovelVisitanteDto> {
+        return repository.findAll(paginacao).map { converterParaVisitanteDto(it) }
     }
 
     fun buscaPorPrecoMaxVisitante(precoMax: BigDecimal): List<ImovelVisitanteDto> {
