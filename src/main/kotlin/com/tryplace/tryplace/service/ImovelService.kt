@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.UUID
-import kotlin.String
 
 @Service
 class ImovelService(
@@ -26,7 +25,6 @@ class ImovelService(
         if (precoMin > precoMax) {
             throw RegraDeNegocioException("O valor mínimo não pode ser maior que o valor maximo")
         }
-
         return repository.findByValorAluguelBetween(precoMin, precoMax).map { converterParaCadastradoDto(it) }
     }
 
@@ -45,16 +43,13 @@ class ImovelService(
     fun buscarImovelCadastradoPorId(id: UUID): ImovelDto {
         val imovel = repository.findById(id)
             .orElseThrow{ RecursoNaoEncontradoException("Imovel com $id não encontrado") }
-
         return converterParaCadastradoDto(imovel)
     }
 
     fun buscarImovelPorNome(nomeImovel: String): List<ImovelDto> {
         val imovel = repository.findByNomeImovelContainingIgnoreCase(nomeImovel)
-
-        return imovel.map { imovel -> converterParaCadastradoDto(imovel)}
+        return imovel.map { converterParaCadastradoDto(it) }
     }
-
 
     private fun converterParaVisitanteDto(im: ImovelModel) = ImovelVisitanteDto(
         id = im.id!!,
@@ -63,7 +58,8 @@ class ImovelService(
         bairroImovel = im.bairroImovel,
         quantidadeQuarto = im.quantidadeQuarto,
         quantidadeBanheiro = im.quantidadeBanheiro,
-        tipoImovel = im.tipoImovel
+        tipoImovel = im.tipoImovel,
+        status = im.status.name.lowercase() // ADICIONADO AQUI PARA O VISITANTE VER A BOLINHA
     )
 
     private fun converterParaCadastradoDto(im: ImovelModel): ImovelDto {
@@ -130,13 +126,11 @@ class ImovelService(
         }
 
         val savedImovel = repository.save(imovel)
-
         return converterParaCadastradoDto(savedImovel)
     }
 
     fun listarImovel(paginacao: Pageable): Page<ImovelDto> {
         val imoveisPage = repository.findAll(paginacao)
-
         return imoveisPage.map { model -> converterParaCadastradoDto(model) }
     }
 
@@ -177,7 +171,6 @@ class ImovelService(
         }
 
         val imovelAtualizado = repository.save(imovelExistente)
-
         return converterParaCadastradoDto(imovelAtualizado)
     }
 

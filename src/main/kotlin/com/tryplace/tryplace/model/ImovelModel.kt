@@ -22,42 +22,64 @@ class ImovelModel(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
+
     @Column(nullable = false)
     var nomeImovel: String,
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var status : StatusImovel = StatusImovel.ATIVO,
+
     @Column(nullable = false)
     var imagemImovel: String,
+
     @Column(nullable = false)
     var valorAluguel: BigDecimal,
+
     @Column(nullable = false)
     var avaliacaoImovel: String,
+
     @Column(nullable = false)
     var descricaoImovel: String,
+
     @Column(nullable = false)
     var quantidadeQuarto: Int,
+
     @Column(nullable = false)
     var quantidadeBanheiro: Int,
+
     @Column(nullable = false)
     var tipoImovel: String,
+
     @Column(nullable = false)
     var wifi: Boolean = false,
+
     @Column(nullable = false)
     var cafeDaManha: Boolean = false,
+
     @Column(nullable = false)
     var ruaImovel: String,
+
+    @Column(nullable = false)
+    var permiteCoabitacao: Boolean = false,
+
     @Column(nullable = false)
     var numeroImovel: String ,
+
     @Column(nullable = false)
     var bairroImovel: String,
+
     @Column(nullable = false)
     var cidadeImovel: String,
+
     @Column(nullable = false)
     var estadoImovel: String,
+
     @Column(nullable = false)
     var cepImovel: String,
+
     var latitude: Double? = null,
+
     var longitude: Double? = null,
 
     @Column(nullable = false)

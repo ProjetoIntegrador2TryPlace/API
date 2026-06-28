@@ -10,5 +10,6 @@ data class ImovelVisitanteDto(
     val bairroImovel: String,
     val quantidadeQuarto: Int,
     val quantidadeBanheiro: Int,
-    val tipoImovel: String
+    val tipoImovel: String,
+    val status: String
 )

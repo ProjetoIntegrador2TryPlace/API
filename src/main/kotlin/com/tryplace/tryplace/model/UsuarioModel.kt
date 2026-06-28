@@ -4,6 +4,7 @@ import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -58,7 +59,7 @@ class UsuarioModel (
     @Column(nullable = false)
     var role: String = "ROLE_USUARIO",
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "usuario_badges", joinColumns = [JoinColumn(name = "usuario_id")])
     @Column(name = "badge")
     var badges: MutableList<String> = mutableListOf(),
