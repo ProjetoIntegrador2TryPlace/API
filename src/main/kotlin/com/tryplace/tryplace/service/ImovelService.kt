@@ -21,23 +21,23 @@ class ImovelService(
     private val geocodingService: GeocodingService
 ) {
 
-    fun buscarPorPrecoMinMax(precoMin: BigDecimal, precoMax: BigDecimal): List<ImovelDto> {
+    fun buscarPorPrecoMinMax(precoMin: BigDecimal, precoMax: BigDecimal, paginacao: Pageable): Page<ImovelDto> {
         if (precoMin > precoMax) {
             throw RegraDeNegocioException("O valor mínimo não pode ser maior que o valor maximo")
         }
-        return repository.findByValorAluguelBetween(precoMin, precoMax).map { converterParaCadastradoDto(it) }
+        return repository.findByValorAluguelBetween(precoMin, precoMax, paginacao).map { converterParaCadastradoDto(it) }
     }
 
     fun listarImovelTodos(paginacao: Pageable): Page<ImovelVisitanteDto> {
         return repository.findAll(paginacao).map { converterParaVisitanteDto(it) }
     }
 
-    fun buscaPorPrecoMaxVisitante(precoMax: BigDecimal): List<ImovelVisitanteDto> {
-        return repository.findByValorAluguelLessThanEqual(precoMax).map { converterParaVisitanteDto(it) }
+    fun buscaPorPrecoMaxVisitante(precoMax: BigDecimal, paginacao: Pageable): Page<ImovelVisitanteDto> {
+        return repository.findByValorAluguelLessThanEqual(precoMax, paginacao).map { converterParaVisitanteDto(it) }
     }
 
-    fun buscaPorTipoImovelVisitante(tipoImovel: String): List<ImovelVisitanteDto> {
-        return repository.findByTipoImovel(tipoImovel).map { converterParaVisitanteDto(it) }
+    fun buscaPorTipoImovelVisitante(tipoImovel: String, paginacao: Pageable): Page<ImovelVisitanteDto> {
+        return repository.findByTipoImovel(tipoImovel, paginacao).map { converterParaVisitanteDto(it) }
     }
 
     fun buscarImovelCadastradoPorId(id: UUID): ImovelDto {
@@ -46,9 +46,8 @@ class ImovelService(
         return converterParaCadastradoDto(imovel)
     }
 
-    fun buscarImovelPorNome(nomeImovel: String): List<ImovelDto> {
-        val imovel = repository.findByNomeImovelContainingIgnoreCase(nomeImovel)
-        return imovel.map { converterParaCadastradoDto(it) }
+    fun buscarImovelPorNome(nomeImovel: String, paginacao: Pageable): Page<ImovelDto> {
+        return repository.findByNomeImovelContainingIgnoreCase(nomeImovel, paginacao).map { converterParaCadastradoDto(it) }
     }
 
     private fun converterParaVisitanteDto(im: ImovelModel) = ImovelVisitanteDto(
@@ -59,7 +58,7 @@ class ImovelService(
         quantidadeQuarto = im.quantidadeQuarto,
         quantidadeBanheiro = im.quantidadeBanheiro,
         tipoImovel = im.tipoImovel,
-        status = im.status.name.lowercase() // ADICIONADO AQUI PARA O VISITANTE VER A BOLINHA
+        status = im.status.name.lowercase()
     )
 
     private fun converterParaCadastradoDto(im: ImovelModel): ImovelDto {

@@ -28,8 +28,11 @@ class ImovelController(
     }
 
     @GetMapping("/visitante/filtroPrecoMax/{precoMax}")
-    fun buscarPorPrecoMax(@PathVariable precoMax: BigDecimal): List<ImovelVisitanteDto> {
-        return service.buscaPorPrecoMaxVisitante(precoMax)
+    fun buscarPorPrecoMax(
+        @PathVariable precoMax: BigDecimal,
+        @PageableDefault(size = 10, page = 0) paginacao: Pageable
+    ): Page<ImovelVisitanteDto> {
+        return service.buscaPorPrecoMaxVisitante(precoMax, paginacao)
     }
 
     @GetMapping("/visitante/{id}")
@@ -38,16 +41,20 @@ class ImovelController(
     }
 
     @GetMapping("/visitante/tipoImovel/{tipoImovel}")
-    fun buscarPorTipoImovel(@PathVariable tipoImovel: String): List<ImovelVisitanteDto> {
-        return service.buscaPorTipoImovelVisitante(tipoImovel)
+    fun buscarPorTipoImovel(
+        @PathVariable tipoImovel: String,
+        @PageableDefault(size = 10, page = 0) paginacao: Pageable
+    ): Page<ImovelVisitanteDto> {
+        return service.buscaPorTipoImovelVisitante(tipoImovel, paginacao)
     }
 
     @GetMapping("/visitante/filtroPrecoMinMax")
     fun buscarPorPrecoMinMax(
         @RequestParam precoMin: BigDecimal,
-        @RequestParam precoMax: BigDecimal
-    ) : ResponseEntity<List<ImovelDto>> {
-        val imovel = service.buscarPorPrecoMinMax(precoMin, precoMax)
+        @RequestParam precoMax: BigDecimal,
+        @PageableDefault(size = 10, page = 0) paginacao: Pageable
+    ): ResponseEntity<Page<ImovelDto>> {
+        val imovel = service.buscarPorPrecoMinMax(precoMin, precoMax, paginacao)
         return ResponseEntity.ok(imovel)
     }
 
@@ -105,9 +112,12 @@ class ImovelController(
     }
 
     @GetMapping("/nome")
-    fun buscarImovelPorNome(@RequestParam(name = "busca") nomeImovel: String): ResponseEntity<List<ImovelDto>> {
-        val imoveisPorNome = service.buscarImovelPorNome(nomeImovel)
-        if (imoveisPorNome.isEmpty()) {
+    fun buscarImovelPorNome(
+        @RequestParam(name = "busca") nomeImovel: String,
+        @PageableDefault(size = 10, page = 0) paginacao: Pageable
+    ): ResponseEntity<Page<ImovelDto>> {
+        val imoveisPorNome = service.buscarImovelPorNome(nomeImovel, paginacao)
+        if (imoveisPorNome.isEmpty) {
             return ResponseEntity.noContent().build()
         }
         return ResponseEntity.ok(imoveisPorNome)
