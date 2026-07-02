@@ -15,5 +15,6 @@ data class PerfilCoabitacaoDetalheDto(
     val nome: String,
     val biografia: String?,
     val badges: List<String>,
+    val telefone: String?,
     val imoveisInteresse: List<ImovelDto>
 )

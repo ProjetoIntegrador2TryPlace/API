@@ -57,12 +57,18 @@ class UsuarioService(
         request.interesseDividir?.let { usuario.interesseDividir = it }
 
         request.descricaoHabito?.let { usuario.descricaoHabito = it }
-        request.genero?.let { usuario.genero = it}
+        request.genero?.let { usuario.genero = it }
         request.termoResponsabilidade?.let { usuario.termoResponsabilidade = it }
+
+        request.badges?.let { novasBadges ->
+            usuario.badges.clear()
+            usuario.badges.addAll(novasBadges)
+        }
 
         val usuarioAtualizado = repository.save(usuario)
         return converterParaDto(usuarioAtualizado)
     }
+
 
     fun cadastrarUsuario(request: UsuarioRequest, ipCliente: String): UsuarioDto {
         if (repository.existsByEmail(request.email)) {
@@ -112,7 +118,10 @@ class UsuarioService(
             tipoConta = tipo,
             nomeEmpresa = usuario.nomeEmpresa,
             cursoPeriodo = usuario.cursoPeriodo,
-            interesseDividir = usuario.interesseDividir
+            interesseDividir = usuario.interesseDividir,
+            descricaoHabito = usuario.descricaoHabito,
+            genero = usuario.genero,
+            badges = usuario.badges.toList()
         )
     }
 }

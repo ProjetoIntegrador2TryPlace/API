@@ -23,9 +23,10 @@ class CoabitacaoController(
         @AuthenticationPrincipal usuarioLogado: UsuarioModel,
         @RequestParam(required = false) curso: String?,
         @RequestParam(required = false) genero: String?,
+        @RequestParam(required = false) badge: String?,
         @PageableDefault(size = 20, page = 0) paginacao: Pageable
     ): ResponseEntity<Page<PerfilCoabitacaoResumoDto>> {
-        val feed = service.listarPerfis(usuarioLogado, curso, genero, paginacao)
+        val feed = service.listarPerfis(usuarioLogado, curso, genero, badge, paginacao)
         return ResponseEntity.ok(feed)
     }
 

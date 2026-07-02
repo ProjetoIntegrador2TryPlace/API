@@ -12,9 +12,10 @@ data class UsuarioDto(
     val dataDeNascimento: LocalDate,
     val isMaiorDeIdade: Boolean,
     val tipoConta: String,
-
     val nomeEmpresa: String?,
     val cursoPeriodo: String?,
-    val interesseDividir: Boolean
-
-    )
+    val interesseDividir: Boolean,
+    val descricaoHabito: String? = null,
+    val genero: String? = null,
+    val badges: List<String> = emptyList()
+)

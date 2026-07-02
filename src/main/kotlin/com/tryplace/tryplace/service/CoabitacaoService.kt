@@ -25,6 +25,7 @@ class CoabitacaoService(
         usuarioLogado: UsuarioModel,
         curso: String?,
         genero: String?,
+        badge: String?,
         paginacao: Pageable
     ): Page<PerfilCoabitacaoResumoDto> {
 
@@ -32,21 +33,39 @@ class CoabitacaoService(
             throw RegraDeNegocioException("Você precisa habilitar seu perfil de coabitação para visualizar a comunidade.")
         }
 
+        val idadeUsuario = Period.between(usuarioLogado.dataDeNascimento, LocalDate.now()).years
+        val (idadeMinima, idadeMaxima) = if (idadeUsuario < 18) {
+            Pair(null, 17)
+        } else {
+            Pair(18, null)
+        }
+
         val perfis = usuarioRepository.buscarPerfisCoabitacao(
             requesterId = usuarioLogado.id!!,
             curso = curso,
             genero = genero,
+            idadeMinima = idadeMinima,
+            idadeMaxima = idadeMaxima,
+            badge = badge,
             paginacao = paginacao
         )
 
         return perfis.map { u ->
             val idadeCalculada = Period.between(u.dataDeNascimento, LocalDate.now()).years
+            
+            // Força inicialização da coleção lazy e garante que não é null
+            val badgesList = try {
+                u.badges?.toList() ?: emptyList()
+            } catch (e: Exception) {
+                emptyList()
+            }
+            
             PerfilCoabitacaoResumoDto(
                 id = u.id!!,
                 nome = u.nomeCompleto,
                 idade = idadeCalculada,
                 cursoPeriodo = u.cursoPeriodo,
-                badges = u.badges
+                badges = badgesList
             )
         }
     }
@@ -64,6 +83,20 @@ class CoabitacaoService(
             throw RegraDeNegocioException("Este usuário desativou a busca por coabitação.")
         }
 
+        val idadeUsuarioLogado = Period.between(usuarioLogado.dataDeNascimento, LocalDate.now()).years
+        val idadePerfil = Period.between(perfil.dataDeNascimento, LocalDate.now()).years
+        
+        if (idadeUsuarioLogado < 18 && idadePerfil >= 18) {
+            throw RegraDeNegocioException("Você só pode visualizar perfis de menores de idade.")
+        }
+
+        // Força inicialização das coleções lazy
+        val badgesList = try {
+            perfil.badges?.toList() ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+
         val interesses = interesseRepository.findAllByUsuario(perfil)
         val imoveisDto = interesses.map { imovelService.buscarImovelCadastradoPorId(it.imovel.id!!) }
 
@@ -71,7 +104,8 @@ class CoabitacaoService(
             id = perfil.id!!,
             nome = perfil.nomeCompleto,
             biografia = perfil.descricaoHabito,
-            badges = perfil.badges,
+            badges = badgesList,
+            telefone = perfil.telefone,
             imoveisInteresse = imoveisDto
         )
     }
