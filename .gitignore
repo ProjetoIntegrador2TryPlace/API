@@ -38,3 +38,6 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### Configurações Locais e Chaves de API ###
+src/main/resources/application.properties
